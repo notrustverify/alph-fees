@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Alephium Fees Display</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Alephium Fees Display</h1>
+        <div class="subtitle">Last <span id="timeRange">--</span> minutes</div>
+        
+        <div class="loading" id="loading">
+            <div class="spinner"></div>
+            <p>Fetching latest block data...</p>
+        </div>
+
+        <div class="error" id="error"></div>
+
+        <div class="stats-grid" id="stats">
+            <div class="stat-card">
+                <h3>Average Fee</h3>
+                <div class="value" id="avgFee">--</div>
+                <div class="unit">per transaction</div>
+            </div>
+            <div class="stat-card">
+                <h3>Total Fees</h3>
+                <div class="value" id="totalFees">--</div>
+                <div class="unit">all transactions</div>
+            </div>
+            <div class="stat-card">
+                <h3>Total Transactions</h3>
+                <div class="value" id="totalTxs">--</div>
+                <div class="unit">transactions</div>
+                <small>non-coinbase</small>
+            </div>
+            <div class="stat-card">
+                <h3>Blocks Analyzed</h3>
+                <div class="value" id="totalBlocks">--</div>
+                <div class="unit">blocks</div>
+            </div>
+        </div>
+
+        <div class="refresh-container">
+            <button class="refresh-btn" id="refreshBtn" onclick="fetchData(true)">
+                Refresh Data
+            </button>
+            <span class="update-status" id="updateStatus"></span>
+        </div>
+
+        <div class="timestamp" id="lastUpdated"></div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html> 
