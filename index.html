@@ -4,10 +4,19 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Alephium Fees Display</title>
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
     <div class="container">
+        <div class="interval-selector">
+            <button class="interval-btn" data-value="5">5m</button>
+            <button class="interval-btn active" data-value="15">15m</button>
+            <button class="interval-btn active" data-value="30">30m</button>
+            <button class="interval-btn" data-value="60">1h</button>
+            <!-- <button class="interval-btn" data-value="180">3h</button> -->
+        </div>
+
         <h1>Alephium Fees Display</h1>
         <div class="subtitle">Last <span id="timeRange">--</span> minutes</div>
         

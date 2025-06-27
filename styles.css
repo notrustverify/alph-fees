@@ -219,6 +219,35 @@ h1 {
     color: #f87171;
 }
 
+.interval-selector {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-bottom: 30px;
+}
+
+.interval-btn {
+    background: rgba(255, 255, 255, 0.1);
+    color: rgba(255, 255, 255, 0.8);
+    border: none;
+    padding: 8px 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 0.9em;
+    transition: all 0.2s ease;
+    min-width: 60px;
+}
+
+.interval-btn:hover {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.interval-btn.active {
+    background: rgba(255, 255, 255, 0.3);
+    color: white;
+    font-weight: 500;
+}
+
 @media (max-width: 768px) {
     .container {
         padding: 20px;

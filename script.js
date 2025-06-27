@@ -1,7 +1,8 @@
 const API_BASE_URL = 'https://lb-fullnode-alephium.notrustverify.ch';
 const BLOCKS_ENDPOINT = `${API_BASE_URL}/blockflow/blocks`;
 const GAS_PRICE_DIVISOR = Math.pow(10, 18); // 10^18
-const TIME_INTERVAL_MINUTES = 60;
+let TIME_INTERVAL_MINUTES = 15; // Default to 15 minutes
+const REFRESH_INTERVAL = 60 * 1000; // Refresh every 1 minute
 
 // Track the last fetch timestamp and stats
 let lastFetchTimestamp = null;
@@ -12,6 +13,24 @@ let totalTransactionsNonCoinbase = 0;
 let isInitialLoad = true;
 let isManualRefresh = false;
 let allFees = [];
+let autoRefreshInterval;
+let currentController = null; // Store the current AbortController
+
+function changeTimeInterval(minutes) {
+    TIME_INTERVAL_MINUTES = parseInt(minutes);
+    // Store the selection in localStorage
+    localStorage.setItem('timeInterval', minutes);
+    // Update active button state
+    document.querySelectorAll('.interval-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.value === minutes.toString());
+    });
+    // Cancel any pending request
+    if (currentController) {
+        currentController.abort();
+    }
+    // Fetch data immediately with new interval
+    fetchData(true);
+}
 
 function showLoading(show) {
     const loading = document.getElementById('loading');
@@ -156,6 +175,14 @@ function updateUI() {
 }
 
 async function fetchData(manual = false) {
+    // Cancel any pending request
+    if (currentController) {
+        currentController.abort();
+    }
+    
+    // Create new AbortController for this request
+    currentController = new AbortController();
+    
     isManualRefresh = manual;
     showLoading(true);
     hideError();
@@ -172,7 +199,9 @@ async function fetchData(manual = false) {
         
         console.log('Fetching data from:', url);
         
-        const response = await fetch(url);
+        const response = await fetch(url, {
+            signal: currentController.signal
+        });
         
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
@@ -192,16 +221,43 @@ async function fetchData(manual = false) {
         lastFetchTimestamp = timeRange.toTs;
         
     } catch (error) {
-        console.error('Error fetching data:', error);
-        showError(`Error fetching data: ${error.message}`);
+        // Only show error if it's not an abort error
+        if (error.name !== 'AbortError') {
+            console.error('Error fetching data:', error);
+            showError(`Error fetching data: ${error.message}`);
+        }
     } finally {
+        currentController = null;
         showLoading(false);
     }
 }
 
 // Initial load
 document.addEventListener('DOMContentLoaded', () => {
-    fetchData(false);  // false indicates not a manual refresh
+    // Setup interval buttons
+    document.querySelectorAll('.interval-btn').forEach(btn => {
+        btn.addEventListener('click', () => changeTimeInterval(btn.dataset.value));
+    });
+
+    // Restore saved time interval if any
+    const savedInterval = localStorage.getItem('timeInterval') || '15';
+    TIME_INTERVAL_MINUTES = parseInt(savedInterval);
+    document.querySelectorAll('.interval-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.value === savedInterval);
+    });
+    
+    fetchData(false);
+    
+    // Clear any existing interval and set new one
+    if (autoRefreshInterval) {
+        clearInterval(autoRefreshInterval);
+    }
+    autoRefreshInterval = setInterval(() => {
+        // Only start a new fetch if there isn't one in progress
+        if (!currentController) {
+            fetchData(false);
+        }
+    }, REFRESH_INTERVAL);
 });
 
 // Auto-refresh every 30 seconds
