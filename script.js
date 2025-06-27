@@ -232,8 +232,32 @@ async function fetchData(manual = false) {
     }
 }
 
+// Theme switching functionality
+function toggleTheme() {
+    const root = document.documentElement;
+    const isDark = !root.classList.contains('light-theme');
+    const darkIcon = document.querySelector('.dark-icon');
+    const lightIcon = document.querySelector('.light-icon');
+    const themeText = document.querySelector('.theme-text');
+    
+    root.classList.toggle('light-theme');
+    darkIcon.style.display = isDark ? 'none' : 'block';
+    lightIcon.style.display = isDark ? 'block' : 'none';
+    themeText.textContent = isDark ? 'Dark Theme' : 'Light Theme';
+    
+    // Save theme preference
+    localStorage.setItem('theme', isDark ? 'light' : 'dark');
+}
+
 // Initial load
 document.addEventListener('DOMContentLoaded', () => {
+    // Setup theme
+    const savedTheme = localStorage.getItem('theme') || 'dark';
+    if (savedTheme === 'light') {
+        toggleTheme();
+    }
+    document.getElementById('themeSwitch').addEventListener('click', toggleTheme);
+
     // Setup interval buttons
     document.querySelectorAll('.interval-btn').forEach(btn => {
         btn.addEventListener('click', () => changeTimeInterval(btn.dataset.value));

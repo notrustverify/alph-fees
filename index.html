@@ -5,31 +5,44 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Alephium Fees Display</title>
     <link rel="icon" type="image/svg+xml" href="favicon.svg">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
+    <button class="theme-switch" id="themeSwitch">
+        <svg class="dark-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path>
+        </svg>
+        <svg class="light-icon" style="display: none;" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path>
+        </svg>
+        <span class="theme-text">Switch Theme</span>
+    </button>
+
     <div class="container">
         <div class="interval-selector">
             <button class="interval-btn" data-value="5">5m</button>
             <button class="interval-btn active" data-value="15">15m</button>
-            <button class="interval-btn active" data-value="30">30m</button>
+            <button class="interval-btn" data-value="30">30m</button>
             <button class="interval-btn" data-value="60">1h</button>
             <!-- <button class="interval-btn" data-value="180">3h</button> -->
         </div>
 
-        <h1>Alephium Fees Display</h1>
+        <h1>Alephium Network Fees</h1>
         <div class="subtitle">Last <span id="timeRange">--</span> minutes</div>
         
         <div class="loading" id="loading">
             <div class="spinner"></div>
-            <p>Fetching latest block data...</p>
+            <p>Fetching latest data...</p>
         </div>
 
         <div class="error" id="error"></div>
 
         <div class="stats-grid" id="stats">
             <div class="stat-card">
-                <h3>Average Fee</h3>
+                <h3>Transaction Fees</h3>
                 <div class="value" id="avgFee">--</div>
                 <div class="unit">per transaction</div>
             </div>
@@ -39,15 +52,14 @@
                 <div class="unit">all transactions</div>
             </div>
             <div class="stat-card">
-                <h3>Total Transactions</h3>
+                <h3>Transactions</h3>
                 <div class="value" id="totalTxs">--</div>
-                <div class="unit">transactions</div>
-                <small>non-coinbase</small>
+                <div class="unit">non-coinbase transactions</div>
             </div>
             <div class="stat-card">
-                <h3>Blocks Analyzed</h3>
+                <h3>Blocks</h3>
                 <div class="value" id="totalBlocks">--</div>
-                <div class="unit">blocks</div>
+                <div class="unit">blocks analyzed</div>
             </div>
         </div>
 
