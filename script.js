@@ -2,7 +2,7 @@ const API_BASE_URL = 'https://lb-fullnode-alephium.notrustverify.ch';
 const BLOCKS_ENDPOINT = `${API_BASE_URL}/blockflow/blocks`;
 const GAS_PRICE_DIVISOR = Math.pow(10, 18); // 10^18
 let TIME_INTERVAL_MINUTES = 15; // Default to 15 minutes
-const REFRESH_INTERVAL = 10 * 60 * 1000; // Refresh every 1 minute
+const REFRESH_INTERVAL = 10 * 60 * 1000; // Refresh every 10 minutes
 
 // Track the last fetch timestamp and stats
 let lastFetchTimestamp = null;
@@ -87,9 +87,7 @@ function formatNumber(num, decimals = 6) {
 }
 
 function calculateFee(gasAmount, gasPrice) {
-    console.log('Gas Amount:', gasAmount, 'Gas Price:', gasPrice);
     const fee = BigInt(gasAmount) * BigInt(gasPrice);
-    console.log('Calculated fee:', fee.toString());
     return fee;
 }
 
@@ -116,7 +114,6 @@ function processBlocks(data) {
                 block.transactions.forEach(tx => {
                     totalTransactions++;
                     if(tx.unsigned && tx.unsigned.gasAmount && tx.unsigned.gasPrice) {
-                        console.log('Transaction:', tx.unsigned.gasAmount, tx.unsigned.gasPrice, tx);
                         const fee = calculateFee(tx.unsigned.gasAmount, tx.unsigned.gasPrice);
                         totalFee += fee;
                         // Store individual fee for median calculation
@@ -151,10 +148,8 @@ function calculateMedian(fees) {
 function updateUI() {
     // Convert from BigInt to number and apply the divisor at the end to maintain precision
     const totalFeeNumber = Number(totalFee) / GAS_PRICE_DIVISOR;
-    console.log('Total fee in ALPH:', totalFeeNumber);
     const averageFee = totalTransactions > 0 ? totalFeeNumber / totalTransactions : 0;
     const medianFee = calculateMedian(allFees.map(fee => fee / GAS_PRICE_DIVISOR));
-    console.log('Average fee:', averageFee, 'Median fee:', medianFee, 'Total transactions:', totalTransactions);
 
     // Update UI
     document.getElementById('avgFee').innerHTML = `
@@ -197,8 +192,6 @@ async function fetchData(manual = false) {
         const timeRange = getTimeRange();
         const url = `${BLOCKS_ENDPOINT}?fromTs=${timeRange.fromTs}&toTs=${timeRange.toTs}`;
         
-        console.log('Fetching data from:', url);
-        
         const response = await fetch(url, {
             signal: currentController.signal
         });
@@ -208,7 +201,6 @@ async function fetchData(manual = false) {
         }
         
         const data = await response.json();
-        console.log('Received data:', data);
         
         if (!data.blocks || !Array.isArray(data.blocks)) {
             throw new Error('Invalid data format: blocks array not found');
