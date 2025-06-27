@@ -2,7 +2,7 @@ const API_BASE_URL = 'https://lb-fullnode-alephium.notrustverify.ch';
 const BLOCKS_ENDPOINT = `${API_BASE_URL}/blockflow/blocks`;
 const GAS_PRICE_DIVISOR = Math.pow(10, 18); // 10^18
 let TIME_INTERVAL_MINUTES = 15; // Default to 15 minutes
-const REFRESH_INTERVAL = 60 * 1000; // Refresh every 1 minute
+const REFRESH_INTERVAL = 10 * 60 * 1000; // Refresh every 1 minute
 
 // Track the last fetch timestamp and stats
 let lastFetchTimestamp = null;
