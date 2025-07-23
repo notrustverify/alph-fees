@@ -155,37 +155,62 @@ h1 {
     transform: translateY(-2px);
 }
 
-.stat-card:first-child {
-    grid-column: 1 / -1;
-}
-
-.stat-card h3 {
-    color: var(--text-secondary);
-    font-size: 0.9em;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    margin-bottom: 12px;
-    font-weight: 500;
-}
-
 .stat-card .value {
     color: var(--text-primary);
     font-size: 1.8em;
     font-weight: 600;
     margin-bottom: 8px;
     line-height: 1.2;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    flex-wrap: wrap;
 }
 
-.fee-display {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 16px;
-    margin: 8px 0;
+.fee-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin: 12px 0;
+    padding: 8px 0;
+}
+
+.fee-row:not(:last-child) {
+    border-bottom: 1px solid var(--border-color);
+}
+
+.fee-label {
+    color: var(--text-secondary);
+    font-size: 0.9em;
+    font-weight: 500;
+    text-align: center;
+    flex: 1;
+}
+
+.fee-amounts {
+    text-align: center;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.alph-amount {
+    color: var(--text-primary);
+    font-weight: 600;
+    font-size: 1.1em;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    justify-content: center;
+}
+
+.usd-amount {
+    color: var(--text-secondary);
+    font-size: 0.85em;
+    margin-top: 4px;
+    text-align: center;
+}
+
+.stat-card:first-child {
+    grid-column: 1 / -1;
+    padding: 32px;
 }
 
 .fee-column {
@@ -397,17 +422,31 @@ h1 {
         min-width: 80px;
     }
 
+    .fee-row {
+        flex-direction: column;
+        align-items: center;
+        gap: 8px;
+        text-align: center;
+    }
+
+    .fee-amounts {
+        text-align: center;
+        width: 100%;
+        align-items: center;
+    }
+
+    .alph-amount {
+        justify-content: center;
+    }
+
+    .usd-amount {
+        margin-left: 0;
+        text-align: center;
+    }
+
     .footer {
         flex-direction: column;
         align-items: center;
         gap: 10px;
-    }
-
-    .fee-display {
-        gap: 8px;
-    }
-    
-    .fee-column .amount {
-        font-size: 0.9em;
     }
 } 

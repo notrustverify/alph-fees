@@ -3,7 +3,7 @@ const BLOCKS_ENDPOINT = `${API_BASE_URL}/blockflow/blocks`;
 const GAS_PRICE_DIVISOR = Math.pow(10, 18); // 10^18
 let TIME_INTERVAL_MINUTES = 15; // Default to 15 minutes
 const REFRESH_INTERVAL = 10 * 60 * 1000; // Refresh every 10 minutes (10 * 60 seconds * 1000 milliseconds)
-const COINGECKO_API = 'https://api.coingecko.com/api/v3/simple/price?ids=alephium&vs_currencies=usd';
+const DIADATA_API = 'https://api.diadata.org/v1/assetQuotation/Alephium/tgx7VNFoP9DJiFMFgXXtafQZkUvyEdDHT9ryamHJYrjq';
 
 // Track the last fetch timestamp and stats
 let lastFetchTimestamp = null;
@@ -20,12 +20,12 @@ let alphPrice = null;
 
 async function fetchAlphPrice() {
     try {
-        const response = await fetch(COINGECKO_API);
+        const response = await fetch(DIADATA_API);
         if (!response.ok) {
             throw new Error('Failed to fetch ALPH price');
         }
         const data = await response.json();
-        alphPrice = data.alephium.usd;
+        alphPrice = data.Price;
     } catch (error) {
         console.error('Error fetching ALPH price:', error);
         alphPrice = null;
@@ -181,38 +181,35 @@ function updateUI() {
 
     // Update UI
     document.getElementById('avgFee').innerHTML = `
-        <div class="fee-display">
-            <div class="fee-column">
-                <div class="label">Average</div>
-                <div class="amount alph-amount">${formatNumber(averageFee)} <span class='alph-label'>ALPH</span></div>
-            </div>
-            <div class="fee-column">
-                <div class="label">USD Value</div>
-                <div class="amount usd-amount">${formatUSD(averageFee)}</div>
+        <div class="fee-row">
+            <div class="fee-label">Average Fee</div>
+            <div class="fee-amounts">
+                <div class="alph-amount">
+                    ${formatNumber(averageFee)}
+                    <span class="alph-label">ALPH</span>
+                </div>
+                <div class="usd-amount">${formatUSD(averageFee)}</div>
             </div>
         </div>
-        <div class="fee-display">
-            <div class="fee-column">
-                <div class="label">Median</div>
-                <div class="amount alph-amount">${formatNumber(medianFee)} <span class='alph-label'>ALPH</span></div>
-            </div>
-            <div class="fee-column">
-                <div class="label">USD Value</div>
-                <div class="amount usd-amount">${formatUSD(medianFee)}</div>
+        <div class="fee-row">
+            <div class="fee-label">Median Fee</div>
+            <div class="fee-amounts">
+                <div class="alph-amount">
+                    ${formatNumber(medianFee)}
+                    <span class="alph-label">ALPH</span>
+                </div>
+                <div class="usd-amount">${formatUSD(medianFee)}</div>
             </div>
         </div>
     `;
     
     document.getElementById('totalFees').innerHTML = `
-        <div class="fee-display">
-            <div class="fee-column">
-                <div class="label">Total</div>
-                <div class="amount alph-amount">${formatNumber(totalFeeNumber)} <span class='alph-label'>ALPH</span></div>
+        <div class="fee-amounts">
+            <div class="alph-amount">
+                ${formatNumber(totalFeeNumber)}
+                <span class="alph-label">ALPH</span>
             </div>
-            <div class="fee-column">
-                <div class="label">USD Value</div>
-                <div class="amount usd-amount">${formatUSD(totalFeeNumber)}</div>
-            </div>
+            <div class="usd-amount">${formatUSD(totalFeeNumber)}</div>
         </div>
     `;
     
