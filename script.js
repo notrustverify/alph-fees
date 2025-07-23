@@ -3,6 +3,7 @@ const BLOCKS_ENDPOINT = `${API_BASE_URL}/blockflow/blocks`;
 const GAS_PRICE_DIVISOR = Math.pow(10, 18); // 10^18
 let TIME_INTERVAL_MINUTES = 15; // Default to 15 minutes
 const REFRESH_INTERVAL = 10 * 60 * 1000; // Refresh every 10 minutes (10 * 60 seconds * 1000 milliseconds)
+const COINGECKO_API = 'https://api.coingecko.com/api/v3/simple/price?ids=alephium&vs_currencies=usd';
 
 // Track the last fetch timestamp and stats
 let lastFetchTimestamp = null;
@@ -15,6 +16,33 @@ let isManualRefresh = false;
 let allFees = [];
 let autoRefreshInterval;
 let currentController = null; // Store the current AbortController
+let alphPrice = null;
+
+async function fetchAlphPrice() {
+    try {
+        const response = await fetch(COINGECKO_API);
+        if (!response.ok) {
+            throw new Error('Failed to fetch ALPH price');
+        }
+        const data = await response.json();
+        alphPrice = data.alephium.usd;
+    } catch (error) {
+        console.error('Error fetching ALPH price:', error);
+        alphPrice = null;
+    }
+}
+
+function formatUSD(alphAmount) {
+    if (!alphPrice || alphAmount === null || alphAmount === undefined) return '';
+    const usdAmount = alphAmount * alphPrice;
+    if (usdAmount < 0.001) {
+        return '< $0.001';
+    }
+    return `$${usdAmount.toLocaleString('en-US', {
+        minimumFractionDigits: 3,
+        maximumFractionDigits: 3
+    })}`;
+}
 
 function changeTimeInterval(minutes) {
     TIME_INTERVAL_MINUTES = parseInt(minutes);
@@ -153,14 +181,39 @@ function updateUI() {
 
     // Update UI
     document.getElementById('avgFee').innerHTML = `
-        <div style="font-size: 0.9em">
-            Avg: ${formatNumber(averageFee)} <span class='alph-label'>ALPH</span><br>
-            Med: ${formatNumber(medianFee)} <span class='alph-label'>ALPH</span>
+        <div class="fee-display">
+            <div class="fee-column">
+                <div class="label">Average</div>
+                <div class="amount alph-amount">${formatNumber(averageFee)} <span class='alph-label'>ALPH</span></div>
+            </div>
+            <div class="fee-column">
+                <div class="label">USD Value</div>
+                <div class="amount usd-amount">${formatUSD(averageFee)}</div>
+            </div>
+        </div>
+        <div class="fee-display">
+            <div class="fee-column">
+                <div class="label">Median</div>
+                <div class="amount alph-amount">${formatNumber(medianFee)} <span class='alph-label'>ALPH</span></div>
+            </div>
+            <div class="fee-column">
+                <div class="label">USD Value</div>
+                <div class="amount usd-amount">${formatUSD(medianFee)}</div>
+            </div>
         </div>
     `;
     
     document.getElementById('totalFees').innerHTML = `
-        <div style="font-size: 0.9em">${formatNumber(totalFeeNumber)} <span class='alph-label'>ALPH</span></div>
+        <div class="fee-display">
+            <div class="fee-column">
+                <div class="label">Total</div>
+                <div class="amount alph-amount">${formatNumber(totalFeeNumber)} <span class='alph-label'>ALPH</span></div>
+            </div>
+            <div class="fee-column">
+                <div class="label">USD Value</div>
+                <div class="amount usd-amount">${formatUSD(totalFeeNumber)}</div>
+            </div>
+        </div>
     `;
     
     document.getElementById('totalTxs').textContent = totalTransactionsNonCoinbase.toLocaleString();
@@ -188,6 +241,9 @@ async function fetchData(manual = false) {
         totalTransactions = 0;
         totalBlocks = 0;
         totalTransactionsNonCoinbase = 0;
+
+        // Fetch ALPH price first
+        await fetchAlphPrice();
 
         const timeRange = getTimeRange();
         const url = `${BLOCKS_ENDPOINT}?fromTs=${timeRange.fromTs}&toTs=${timeRange.toTs}`;
