@@ -173,40 +173,11 @@ function calculateMedian(fees) {
     }
 }
 
-function updateMetaTags(averageFee, totalFeeNumber, alphPrice) {
-    // Update meta tags for social media previews
-    const avgFeeUSD = alphPrice ? (averageFee * alphPrice).toFixed(3) : '';
-    const totalFeeUSD = alphPrice ? (totalFeeNumber * alphPrice).toFixed(2) : '';
-    
-    const description = `Avg Fee: ${formatNumber(averageFee)} ALPH${avgFeeUSD ? ` ($${avgFeeUSD})` : ''} | Total: ${formatNumber(totalFeeNumber)} ALPH${totalFeeUSD ? ` ($${totalFeeUSD})` : ''}`;
-    
-    // Update Open Graph meta tags
-    const ogDescription = document.querySelector('meta[property="og:description"]');
-    if (ogDescription) {
-        ogDescription.setAttribute('content', description);
-    }
-    
-    // Update Twitter meta tags
-    const twitterDescription = document.querySelector('meta[property="twitter:description"]');
-    if (twitterDescription) {
-        twitterDescription.setAttribute('content', description);
-    }
-    
-    // Update regular description meta tag
-    const metaDescription = document.querySelector('meta[name="description"]');
-    if (metaDescription) {
-        metaDescription.setAttribute('content', description);
-    }
-}
-
 function updateUI() {
     // Convert from BigInt to number and apply the divisor at the end to maintain precision
     const totalFeeNumber = Number(totalFee) / GAS_PRICE_DIVISOR;
     const averageFee = totalTransactions > 0 ? totalFeeNumber / totalTransactions : 0;
     const medianFee = calculateMedian(allFees.map(fee => fee / GAS_PRICE_DIVISOR));
-
-    // Update meta tags for social media previews
-    updateMetaTags(averageFee, totalFeeNumber, alphPrice);
 
     // Update UI
     document.getElementById('avgFee').innerHTML = `
